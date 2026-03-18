@@ -35,7 +35,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // =============================================
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const isConfigured = SUPABASE_URL !== "https://dngphaahgeyfpcsjifwt.supabase.co" && SUPABASE_ANON_KEY !== "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuZ3BoYWFoZ2V5ZnBjc2ppZnd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3OTg3MTQsImV4cCI6MjA4OTM3NDcxNH0.RTTQU9bRKZLV-nzzkcOK8LvJrtILCvneQNNwzCUMkW0";
+const isConfigured = true;
 
 const PLATFORMS = ["iOS", "Android", "Web"];
 const PRIORITIES = ["Critical", "High", "Medium", "Low"];
