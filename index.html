@@ -182,7 +182,7 @@ function BugForm({ bug, onSave, onCancel, saving }) {
   };
 
   const uploadFiles = async () => {
-    if (selectedFiles.length === 0) return true;
+    if (selectedFiles.length === 0) return [];
 
     setUploading(true);
     const uploadedUrls = [];
@@ -195,27 +195,28 @@ function BugForm({ bug, onSave, onCancel, saving }) {
 
         if (error) {
           setUploading(false);
-          return false;
+          return null;
         }
 
         const { data: urlData } = supabase.storage.from('bug-attachments').getPublicUrl(filename);
         uploadedUrls.push({ url: urlData.publicUrl, type: fileObj.type });
       }
 
-      update('attachments', [...(form.attachments || []), ...uploadedUrls]);
       setSelectedFiles([]);
       setUploading(false);
-      return true;
+      return uploadedUrls;
     } catch (err) {
       setUploading(false);
-      return false;
+      return null;
     }
   };
 
   const handleSave = async () => {
     if (form.title.trim() && form.description.trim()) {
-      const filesUploaded = await uploadFiles();
-      if (filesUploaded) onSave(form);
+      const newUploads = await uploadFiles();
+      if (newUploads === null) return;
+      const allAttachments = [...(form.attachments || []), ...newUploads];
+      onSave({ ...form, attachments: allAttachments });
     }
   };
 
