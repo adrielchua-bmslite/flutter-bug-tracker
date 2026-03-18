@@ -76,9 +76,11 @@
     .table-row { font-size: 0.8rem !important; }
   }
 
-  /* Default: show table, hide cards */
+  /* Default: show table, hide cards. JS can override via .force-cards */
   .desktop-table { display: block; }
   .mobile-cards { display: none; }
+  .force-cards .desktop-table { display: none !important; }
+  .force-cards .mobile-cards { display: block !important; }
 
   /* Bug card styles for mobile */
   .bug-card {
@@ -658,6 +660,30 @@ function BugTracker() {
   const [viewBug, setViewBug] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [toast, setToast] = useState(null);
+  const tableContainerRef = useRef(null);
+  const contentAreaRef = useRef(null);
+
+  // Auto-switch to cards when table would overflow (truncated)
+  useEffect(() => {
+    const checkOverflow = () => {
+      const container = tableContainerRef.current;
+      const contentArea = contentAreaRef.current;
+      if (!container || !contentArea) return;
+      const table = container.querySelector('table');
+      if (!table) return;
+      const isOverflowing = table.scrollWidth > container.clientWidth + 2;
+      if (isOverflowing) {
+        contentArea.classList.add('force-cards');
+      } else {
+        contentArea.classList.remove('force-cards');
+      }
+    };
+    checkOverflow();
+    window.addEventListener('resize', checkOverflow);
+    const observer = new MutationObserver(checkOverflow);
+    if (contentAreaRef.current) observer.observe(contentAreaRef.current, { childList: true, subtree: true });
+    return () => { window.removeEventListener('resize', checkOverflow); observer.disconnect(); };
+  });
 
   const showToast = (message, type = "success") => setToast({ message, type, key: Date.now() });
 
@@ -822,7 +848,7 @@ function BugTracker() {
         </div>
       </div>
 
-      <div style={{maxWidth:'80rem',margin:'0 auto',padding:'1.5rem'}} className="page-container">
+      <div ref={contentAreaRef} style={{maxWidth:'80rem',margin:'0 auto',padding:'1.5rem'}} className="page-container">
         {/* Stats */}
         <div style={{display:'grid',gridTemplateColumns:'repeat(4, 1fr)',gap:'1rem',marginBottom:'1.5rem'}} className="stats-grid">
           {[
@@ -863,7 +889,7 @@ function BugTracker() {
         </div>
 
         {/* Desktop Table */}
-        <div className="desktop-table" style={{backgroundColor:'rgba(255,255,255,0.75)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(0,0,0,0.06)',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)'}}>
+        <div ref={tableContainerRef} className="desktop-table" style={{backgroundColor:'rgba(255,255,255,0.75)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(0,0,0,0.06)',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)'}}>
           <div style={{overflowX:'auto',WebkitOverflowScrolling:'touch'}}>
             <table style={{width:'100%',borderCollapse:'collapse'}}>
               <thead>
