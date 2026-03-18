@@ -13,7 +13,7 @@
   body {
     margin: 0;
     font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+    background: linear-gradient(135deg, #2d2d3a 0%, #252532 50%, #2d2d3a 100%);
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -24,11 +24,11 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .spinner { width:20px;height:20px;border:2px solid rgba(0,122,255,0.2);border-top-color:#007AFF;border-radius:50%;animation:spin 0.6s linear infinite; }
   input::placeholder, textarea::placeholder, select { color: #6b7280; }
-  input::-webkit-autofill, input::-webkit-autofill:hover, input::-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 30px rgba(255,255,255,0.06) inset !important; -webkit-text-fill-color: #f0f0f5 !important; }
+  input::-webkit-autofill, input::-webkit-autofill:hover, input::-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 30px rgba(255,255,255,0.08) inset !important; -webkit-text-fill-color: #f0f0f5 !important; }
   option { background-color: #1a1a2e; color: #f0f0f5; }
   select option:checked { background: linear-gradient(#007AFF, #007AFF); background-color: #007AFF !important; }
   @keyframes fadeIn { from { opacity:0;transform:translateY(-4px); } to { opacity:1;transform:translateY(0); } }
-  .toast { position:fixed;top:1rem;right:1rem;z-index:100;padding:0.75rem 1rem;border-radius:12px;font-size:0.875rem;font-weight:500;animation:fadeIn 0.3s ease;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1); }
+  .toast { position:fixed;top:1rem;right:1rem;z-index:100;padding:0.75rem 1rem;border-radius:12px;font-size:0.875rem;font-weight:500;animation:fadeIn 0.3s ease;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.12); }
   .toast-success { background:rgba(34,197,94,0.8);color:white; }
   .toast-error { background:rgba(239,68,68,0.8);color:white; }
   .toast-info { background:rgba(0,122,255,0.8);color:white; }
@@ -163,8 +163,8 @@ function Modal({ isOpen, onClose, children, title, width }) {
   return (
     <div style={{position:'fixed',inset:0,zIndex:50,display:'flex',alignItems:'center',justifyContent:'center',padding:'1rem'}} onClick={onClose}>
       <div style={{position:'fixed',inset:0,backgroundColor:'rgba(0,0,0,0.6)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)'}} />
-      <div style={{position:'relative',backgroundColor:'rgba(35,35,50,0.9)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',boxShadow:'0 8px 32px rgba(0,0,0,0.3)',border:'1px solid rgba(255,255,255,0.06)',width:'100%',maxWidth: width || '42rem',maxHeight:'90vh',overflowY:'auto'}} onClick={(e) => e.stopPropagation()}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'1.25rem 1.5rem',borderBottom:'1px solid rgba(255,255,255,0.06)',position:'sticky',top:0,backgroundColor:'rgba(20,20,35,0.8)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',borderRadius:'16px 16px 0 0',zIndex:10}} className="modal-header">
+      <div style={{position:'relative',backgroundColor:'rgba(55,55,70,0.95)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',boxShadow:'0 8px 32px rgba(0,0,0,0.3)',border:'1px solid rgba(255,255,255,0.06)',width:'100%',maxWidth: width || '42rem',maxHeight:'90vh',overflowY:'auto'}} onClick={(e) => e.stopPropagation()}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'1.25rem 1.5rem',borderBottom:'1px solid rgba(255,255,255,0.06)',position:'sticky',top:0,backgroundColor:'rgba(45,45,58,0.85)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',borderRadius:'16px 16px 0 0',zIndex:10}} className="modal-header">
           <h2 style={{fontSize:'1.125rem',fontWeight:600,color:'#f0f0f5',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{title}</h2>
           <button onClick={onClose} style={{padding:'4px',borderRadius:'8px',border:'none',background:'rgba(255,255,255,0.06)',cursor:'pointer',color:'#9ca3b0',fontSize:'18px',flexShrink:0,transition:'all 0.2s ease'}}>✕</button>
         </div>
@@ -187,7 +187,7 @@ function BugForm({ bug, onSave, onCancel, saving }) {
   const fileInputRef = useRef(null);
 
   const update = (field, value) => setForm((f) => ({ ...f, [field]: value }));
-  const inputStyle = {width:'100%',padding:'0.75rem 1rem',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'10px',fontSize:'0.875rem',outline:'none',boxSizing:'border-box',backgroundColor:'rgba(255,255,255,0.06)',color:'#f0f0f5',transition:'all 0.2s ease',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'};
+  const inputStyle = {width:'100%',padding:'0.75rem 1rem',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'10px',fontSize:'0.875rem',outline:'none',boxSizing:'border-box',backgroundColor:'rgba(255,255,255,0.08)',color:'#f0f0f5',transition:'all 0.2s ease',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'};
   const labelStyle = {display:'block',fontSize:'0.875rem',fontWeight:500,color:'#9ca3b0',marginBottom:'0.375rem',lineHeight:'1.5'};
 
   const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/gif'];
@@ -279,22 +279,22 @@ function BugForm({ bug, onSave, onCancel, saving }) {
     <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
       <div>
         <label style={labelStyle}>Title *</label>
-        <input type="text" value={form.title} onChange={(e) => update("title", e.target.value)} style={inputStyle} placeholder="Brief summary of the bug" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'} />
+        <input type="text" value={form.title} onChange={(e) => update("title", e.target.value)} style={inputStyle} placeholder="Brief summary of the bug" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'} />
       </div>
       <div>
         <label style={labelStyle}>Description *</label>
-        <textarea value={form.description} onChange={(e) => update("description", e.target.value)} rows={3} style={{...inputStyle,resize:'none',minHeight:'6rem'}} placeholder="Detailed description of the issue" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'} />
+        <textarea value={form.description} onChange={(e) => update("description", e.target.value)} rows={3} style={{...inputStyle,resize:'none',minHeight:'6rem'}} placeholder="Detailed description of the issue" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'} />
       </div>
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem'}} className="form-grid-mobile">
         <div>
           <label style={labelStyle}>Platform</label>
-          <select value={form.platform} onChange={(e) => update("platform", e.target.value)} style={{...inputStyle}} onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'}>
+          <select value={form.platform} onChange={(e) => update("platform", e.target.value)} style={{...inputStyle}} onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'}>
             {PLATFORMS.map((p) => <option key={p}>{p}</option>)}
           </select>
         </div>
         <div>
           <label style={labelStyle}>Priority</label>
-          <select value={form.priority} onChange={(e) => update("priority", e.target.value)} style={{...inputStyle}} onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'}>
+          <select value={form.priority} onChange={(e) => update("priority", e.target.value)} style={{...inputStyle}} onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'}>
             {PRIORITIES.map((p) => <option key={p}>{p}</option>)}
           </select>
         </div>
@@ -302,36 +302,36 @@ function BugForm({ bug, onSave, onCancel, saving }) {
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem'}} className="form-grid-mobile">
         <div>
           <label style={labelStyle}>Status</label>
-          <select value={form.status} onChange={(e) => update("status", e.target.value)} style={{...inputStyle}} onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'}>
+          <select value={form.status} onChange={(e) => update("status", e.target.value)} style={{...inputStyle}} onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'}>
             {STATUSES.map((s) => <option key={s}>{s}</option>)}
           </select>
         </div>
         <div>
           <label style={labelStyle}>Date Reported</label>
-          <input type="date" value={form.dateReported} onChange={(e) => update("dateReported", e.target.value)} style={inputStyle} onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'} />
+          <input type="date" value={form.dateReported} onChange={(e) => update("dateReported", e.target.value)} style={inputStyle} onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'} />
         </div>
       </div>
       <div>
         <label style={labelStyle}>Steps to Reproduce</label>
-        <textarea value={form.stepsToReproduce} onChange={(e) => update("stepsToReproduce", e.target.value)} rows={3} style={{...inputStyle,resize:'none',fontFamily:'monospace',minHeight:'6rem'}} placeholder={"1. Open app\n2. Tap on...\n3. Observe..."} onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'} />
+        <textarea value={form.stepsToReproduce} onChange={(e) => update("stepsToReproduce", e.target.value)} rows={3} style={{...inputStyle,resize:'none',fontFamily:'monospace',minHeight:'6rem'}} placeholder={"1. Open app\n2. Tap on...\n3. Observe..."} onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'} />
       </div>
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem'}} className="form-grid-mobile">
         <div>
           <label style={labelStyle}>Device Info</label>
-          <input type="text" value={form.deviceInfo} onChange={(e) => update("deviceInfo", e.target.value)} style={inputStyle} placeholder="e.g. iPhone 14, iOS 17.4" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'} />
+          <input type="text" value={form.deviceInfo} onChange={(e) => update("deviceInfo", e.target.value)} style={inputStyle} placeholder="e.g. iPhone 14, iOS 17.4" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'} />
         </div>
         <div>
           <label style={labelStyle}>App Version</label>
-          <input type="text" value={form.appVersion} onChange={(e) => update("appVersion", e.target.value)} style={inputStyle} placeholder="e.g. 2.3.1" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'} />
+          <input type="text" value={form.appVersion} onChange={(e) => update("appVersion", e.target.value)} style={inputStyle} placeholder="e.g. 2.3.1" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'} />
         </div>
       </div>
       <div>
         <label style={labelStyle}>Assigned To</label>
-        <input type="text" value={form.assignedTo} onChange={(e) => update("assignedTo", e.target.value)} style={inputStyle} placeholder="Developer name" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'} />
+        <input type="text" value={form.assignedTo} onChange={(e) => update("assignedTo", e.target.value)} style={inputStyle} placeholder="Developer name" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'} />
       </div>
       <div>
         <label style={labelStyle}>Resolution Notes</label>
-        <textarea value={form.resolutionNotes} onChange={(e) => update("resolutionNotes", e.target.value)} rows={2} style={{...inputStyle,resize:'none',minHeight:'4rem'}} placeholder="How was this resolved? (fill in when closing)" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'} />
+        <textarea value={form.resolutionNotes} onChange={(e) => update("resolutionNotes", e.target.value)} rows={2} style={{...inputStyle,resize:'none',minHeight:'4rem'}} placeholder="How was this resolved? (fill in when closing)" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'} />
       </div>
 
       <div>
@@ -492,7 +492,7 @@ function BugDetail({ bug, onClose, onEdit, onStatusChange }) {
 function SetupScreen() {
   return (
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',padding:'2rem'}}>
-      <div style={{backgroundColor:'rgba(35,35,50,0.9)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(255,255,255,0.06)',padding:'2.5rem',maxWidth:'36rem',width:'100%',boxShadow:'0 8px 32px rgba(0,0,0,0.3)'}}>
+      <div style={{backgroundColor:'rgba(55,55,70,0.95)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(255,255,255,0.06)',padding:'2.5rem',maxWidth:'36rem',width:'100%',boxShadow:'0 8px 32px rgba(0,0,0,0.3)'}}>
         <div style={{display:'flex',alignItems:'center',gap:'0.75rem',marginBottom:'1.5rem'}}>
           <div style={{width:40,height:40,backgroundColor:'#007AFF',borderRadius:'12px',display:'flex',alignItems:'center',justifyContent:'center'}}>
             <svg width="20" height="20" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -666,7 +666,7 @@ function BugTracker() {
       {toast && <Toast key={toast.key} message={toast.message} type={toast.type} onDone={() => setToast(null)} />}
 
       {/* Header */}
-      <div style={{backgroundColor:'rgba(20,20,35,0.8)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderBottom:'1px solid rgba(255,255,255,0.06)',position:'sticky',top:0,zIndex:30,boxShadow:'0 2px 12px rgba(0,0,0,0.2)'}}>
+      <div style={{backgroundColor:'rgba(45,45,58,0.85)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderBottom:'1px solid rgba(255,255,255,0.06)',position:'sticky',top:0,zIndex:30,boxShadow:'0 2px 12px rgba(0,0,0,0.2)'}}>
         <div style={{maxWidth:'80rem',margin:'0 auto',padding:'1rem 1.5rem'}} className="header-container">
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'1rem'}}>
             <div style={{display:'flex',alignItems:'center',gap:'0.75rem',minWidth:0,flex:1}}>
@@ -714,23 +714,23 @@ function BugTracker() {
         </div>
 
         {/* Filters */}
-        <div style={{backgroundColor:'rgba(30,30,45,0.7)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(255,255,255,0.06)',padding:'1rem',marginBottom:'1.5rem',boxShadow:'0 2px 12px rgba(0,0,0,0.2)'}}>
+        <div style={{backgroundColor:'rgba(50,50,65,0.6)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(255,255,255,0.06)',padding:'1rem',marginBottom:'1.5rem',boxShadow:'0 2px 12px rgba(0,0,0,0.2)'}}>
           <div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap'}} className="filter-bar">
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-              style={{flex:1,minWidth:'200px',padding:'0.75rem 1rem',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'10px',fontSize:'0.875rem',outline:'none',backgroundColor:'rgba(255,255,255,0.06)',color:'#f0f0f5',transition:'all 0.2s ease',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}}
-              placeholder="Search bugs by title, description, assignee, or ID..." className="filter-search" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'} />
+              style={{flex:1,minWidth:'200px',padding:'0.75rem 1rem',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'10px',fontSize:'0.875rem',outline:'none',backgroundColor:'rgba(255,255,255,0.08)',color:'#f0f0f5',transition:'all 0.2s ease',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}}
+              placeholder="Search bugs by title, description, assignee, or ID..." className="filter-search" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'} />
             <select value={filterPlatform} onChange={(e) => setFilterPlatform(e.target.value)}
-              style={{padding:'0.75rem 1rem',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'10px',fontSize:'0.875rem',backgroundColor:'rgba(255,255,255,0.06)',color:'#f0f0f5',transition:'all 0.2s ease',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}} className="filter-select" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'}>
+              style={{padding:'0.75rem 1rem',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'10px',fontSize:'0.875rem',backgroundColor:'rgba(255,255,255,0.08)',color:'#f0f0f5',transition:'all 0.2s ease',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}} className="filter-select" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'}>
               <option value="All">All Platforms</option>
               {PLATFORMS.map((p) => <option key={p}>{p}</option>)}
             </select>
             <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
-              style={{padding:'0.75rem 1rem',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'10px',fontSize:'0.875rem',backgroundColor:'rgba(255,255,255,0.06)',color:'#f0f0f5',transition:'all 0.2s ease',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}} className="filter-select" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'}>
+              style={{padding:'0.75rem 1rem',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'10px',fontSize:'0.875rem',backgroundColor:'rgba(255,255,255,0.08)',color:'#f0f0f5',transition:'all 0.2s ease',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}} className="filter-select" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'}>
               <option value="All">All Statuses</option>
               {STATUSES.map((s) => <option key={s}>{s}</option>)}
             </select>
             <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)}
-              style={{padding:'0.75rem 1rem',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'10px',fontSize:'0.875rem',backgroundColor:'rgba(255,255,255,0.06)',color:'#f0f0f5',transition:'all 0.2s ease',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}} className="filter-select" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.1)'}>
+              style={{padding:'0.75rem 1rem',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'10px',fontSize:'0.875rem',backgroundColor:'rgba(255,255,255,0.08)',color:'#f0f0f5',transition:'all 0.2s ease',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)'}} className="filter-select" onFocus={(e) => e.target.style.borderColor='#007AFF'} onBlur={(e) => e.target.style.borderColor='rgba(255,255,255,0.12)'}>
               <option value="All">All Priorities</option>
               {PRIORITIES.map((p) => <option key={p}>{p}</option>)}
             </select>
@@ -738,7 +738,7 @@ function BugTracker() {
         </div>
 
         {/* Table */}
-        <div style={{backgroundColor:'rgba(30,30,45,0.7)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(255,255,255,0.06)',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.2)'}}>
+        <div style={{backgroundColor:'rgba(50,50,65,0.6)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(255,255,255,0.06)',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.2)'}}>
           <div style={{overflowX:'auto',WebkitOverflowScrolling:'touch'}}>
             <table style={{width:'100%',borderCollapse:'collapse'}}>
               <thead>
