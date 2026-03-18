@@ -496,6 +496,114 @@ function BugForm({ bug, onSave, onCancel, saving }) {
   );
 }
 
+function Comments({ bugId }) {
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [author, setAuthor] = useState(() => localStorage.getItem('bugTrackerAuthor') || '');
+  const [content, setContent] = useState('');
+  const [posting, setPosting] = useState(false);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      const { data, error } = await supabase
+        .from('bug_comments')
+        .select('*')
+        .eq('bug_id', bugId)
+        .order('created_at', { ascending: true });
+      if (!error && data) setComments(data);
+      setLoading(false);
+    };
+    fetchComments();
+
+    const channel = supabase
+      .channel(`comments-${bugId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'bug_comments', filter: `bug_id=eq.${bugId}` }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          setComments(prev => [...prev, payload.new]);
+        } else if (payload.eventType === 'DELETE') {
+          setComments(prev => prev.filter(c => c.id !== payload.old.id));
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [bugId]);
+
+  const handlePost = async () => {
+    if (!author.trim() || !content.trim()) return;
+    setPosting(true);
+    const { error } = await supabase.from('bug_comments').insert({
+      bug_id: bugId,
+      author: author.trim(),
+      content: content.trim(),
+    });
+    if (!error) {
+      localStorage.setItem('bugTrackerAuthor', author);
+      setContent('');
+    }
+    setPosting(false);
+  };
+
+  const formatTime = (isoString) => {
+    const date = new Date(isoString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMin = Math.floor(diffMs / 60000);
+    const diffHour = Math.floor(diffMs / 3600000);
+    const diffDay = Math.floor(diffMs / 86400000);
+
+    if (diffMin < 1) return 'just now';
+    if (diffMin < 60) return `${diffMin}m ago`;
+    if (diffHour < 24) return `${diffHour}h ago`;
+    if (diffDay < 7) return `${diffDay}d ago`;
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'1rem'}}>
+        <div style={{fontSize:'0.7rem',fontWeight:600,color:'#6e6e73',textTransform:'uppercase',letterSpacing:'0.05em'}}>Comments</div>
+        <span style={{fontSize:'0.75rem',fontWeight:500,color:'#fff',backgroundColor:'#007AFF',borderRadius:'12px',padding:'0.125rem 0.5rem'}}>{comments.length}</span>
+      </div>
+
+      {loading ? (
+        <div style={{textAlign:'center',color:'#86868b',fontSize:'0.875rem',padding:'1rem'}}>Loading...</div>
+      ) : (
+        <>
+          {comments.length === 0 ? (
+            <p style={{fontSize:'0.875rem',color:'#86868b',margin:'0 0 1rem'}}>No comments yet. Be the first to comment!</p>
+          ) : (
+            <div style={{marginBottom:'1rem',maxHeight:'200px',overflowY:'auto'}}>
+              {comments.map((comment) => (
+                <div key={comment.id} style={{marginBottom:'0.75rem',padding:'0.75rem',backgroundColor:'rgba(255,255,255,0.5)',borderRadius:'8px',border:'1px solid rgba(0,0,0,0.04)'}}>
+                  <div style={{display:'flex',alignItems:'baseline',gap:'0.5rem',marginBottom:'0.25rem'}}>
+                    <span style={{fontSize:'0.875rem',fontWeight:600,color:'#1d1d1f'}}>{comment.author}</span>
+                    <span style={{fontSize:'0.7rem',color:'#86868b'}}>{formatTime(comment.created_at)}</span>
+                  </div>
+                  <p style={{fontSize:'0.875rem',color:'#6e6e73',margin:0,whiteSpace:'pre-wrap'}}>{comment.content}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div style={{borderTop:'1px solid rgba(0,0,0,0.06)',paddingTop:'0.75rem'}}>
+            <input type="text" value={author} onChange={(e) => setAuthor(e.target.value)}
+              placeholder="Your name" maxLength={50}
+              style={{width:'100%',padding:'0.5rem 0.75rem',fontSize:'0.875rem',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',marginBottom:'0.5rem',boxSizing:'border-box',outline:'none',backgroundColor:'rgba(255,255,255,0.9)',color:'#1d1d1f'}} />
+            <textarea value={content} onChange={(e) => setContent(e.target.value)}
+              placeholder="Add a comment..."
+              style={{width:'100%',padding:'0.5rem 0.75rem',fontSize:'0.875rem',border:'1px solid rgba(0,0,0,0.1)',borderRadius:'8px',marginBottom:'0.5rem',boxSizing:'border-box',outline:'none',backgroundColor:'rgba(255,255,255,0.9)',color:'#1d1d1f',fontFamily:'inherit',minHeight:'60px',resize:'vertical'}} />
+            <button onClick={handlePost} disabled={posting || !author.trim() || !content.trim()}
+              style={{width:'100%',padding:'0.5rem 1rem',fontSize:'0.875rem',fontWeight:500,color:'white',backgroundColor:posting || !author.trim() || !content.trim() ? '#ccc' : '#007AFF',border:'none',borderRadius:'8px',cursor:posting || !author.trim() || !content.trim() ? 'default' : 'pointer',transition:'all 0.2s ease'}}>
+              {posting ? 'Posting...' : 'Post'}
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function BugDetail({ bug, onClose, onEdit, onStatusChange }) {
   const pc = PRIORITY_COLORS[bug.priority];
   const sc = STATUS_COLORS[bug.status];
@@ -562,6 +670,10 @@ function BugDetail({ bug, onClose, onEdit, onStatusChange }) {
         </div>
       )}
 
+      <div style={{backgroundColor:'rgba(255,255,255,0.5)',borderRadius:'12px',padding:'1rem',border:'1px solid rgba(0,0,0,0.04)'}}>
+        <Comments bugId={bug.id} />
+      </div>
+
       <div style={{borderTop:'1px solid rgba(0,0,0,0.06)',paddingTop:'1rem'}}>
         <div style={sectionTitle}>Quick Status Update</div>
         <div style={{display:'flex',flexWrap:'wrap',gap:'0.5rem'}}>
@@ -616,6 +728,49 @@ function BugCard({ bug, onView, onEdit, onDelete }) {
   );
 }
 
+function KanbanBoard({ bugs, onViewBug }) {
+  const groupedByStatus = STATUSES.reduce((acc, status) => {
+    acc[status] = bugs.filter(b => b.status === status);
+    return acc;
+  }, {});
+
+  const KanbanCard = ({ bug }) => {
+    const pc = PRIORITY_COLORS[bug.priority];
+    return (
+      <div onClick={() => onViewBug(bug)}
+        style={{backgroundColor:'white',borderRadius:'12px',padding:'12px',marginBottom:'8px',boxShadow:'0 1px 3px rgba(0,0,0,0.08)',border:'1px solid rgba(0,0,0,0.06)',cursor:'pointer',transition:'all 0.2s ease'}}>
+        <h4 style={{fontSize:'0.875rem',fontWeight:500,color:'#1d1d1f',margin:'0 0 0.5rem',lineHeight:1.3,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{bug.title}</h4>
+        <div style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'0.5rem'}}>
+          <Badge style={{backgroundColor:'rgba(255,255,255,0.75)',color:'#1d1d1f',fontSize:'0.65rem',padding:'0.25rem 0.5rem'}}>{bug.platform}</Badge>
+          <span style={{width:6,height:6,borderRadius:'50%',display:'inline-block',backgroundColor:pc.dot}} />
+        </div>
+        <p style={{fontSize:'0.75rem',color:'#86868b',margin:0}}>{bug.assignedTo || 'Unassigned'}</p>
+      </div>
+    );
+  };
+
+  return (
+    <div style={{display:'flex',gap:'1rem',overflowX:'auto',paddingBottom:'1rem'}}>
+      {STATUSES.map((status) => (
+        <div key={status}
+          style={{flex:'0 0 250px',display:'flex',flexDirection:'column',backgroundColor:'rgba(0,0,0,0.02)',borderRadius:'12px',border:'1px solid rgba(0,0,0,0.04)'}}>
+          <div style={{position:'sticky',top:0,backgroundColor:'rgba(255,255,255,0.8)',backdropFilter:'blur(10px)',padding:'0.75rem',borderBottom:'1px solid rgba(0,0,0,0.06)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+            <h3 style={{fontSize:'0.875rem',fontWeight:600,color:'#1d1d1f',margin:0}}>{status}</h3>
+            <span style={{fontSize:'0.75rem',fontWeight:500,color:'#6e6e73',backgroundColor:'rgba(0,0,0,0.05)',borderRadius:'8px',padding:'0.25rem 0.5rem'}}>{groupedByStatus[status].length}</span>
+          </div>
+          <div style={{flex:1,overflowY:'auto',padding:'0.75rem',maxHeight:'calc(100vh - 300px)'}}>
+            {groupedByStatus[status].length === 0 ? (
+              <p style={{fontSize:'0.75rem',color:'#86868b',textAlign:'center',margin:'1rem 0'}}>No bugs</p>
+            ) : (
+              groupedByStatus[status].map(bug => <KanbanCard key={bug.id} bug={bug} />)
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function SetupScreen() {
   return (
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',padding:'2rem'}}>
@@ -660,6 +815,7 @@ function BugTracker() {
   const [viewBug, setViewBug] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [toast, setToast] = useState(null);
+  const [viewMode, setViewMode] = useState('list');
   const tableContainerRef = useRef(null);
   const contentAreaRef = useRef(null);
 
@@ -886,9 +1042,29 @@ function BugTracker() {
               {PRIORITIES.map((p) => <option key={p}>{p}</option>)}
             </select>
           </div>
+          <div style={{display:'flex',gap:'0.5rem',marginTop:'0.75rem'}}>
+            <button onClick={() => setViewMode('list')}
+              style={{padding:'0.5rem 1rem',fontSize:'0.875rem',fontWeight:500,borderRadius:'10px',border: viewMode === 'list' ? '1px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
+                backgroundColor: viewMode === 'list' ? '#007AFF' : 'rgba(255,255,255,0.75)', color: viewMode === 'list' ? 'white' : '#1d1d1f', cursor:'pointer',transition:'all 0.2s ease',backdropFilter: viewMode !== 'list' ? 'blur(10px)' : 'none',WebkitBackdropFilter: viewMode !== 'list' ? 'blur(10px)' : 'none'}}>
+              📋 List
+            </button>
+            <button onClick={() => setViewMode('board')}
+              style={{padding:'0.5rem 1rem',fontSize:'0.875rem',fontWeight:500,borderRadius:'10px',border: viewMode === 'board' ? '1px solid #007AFF' : '1px solid rgba(0,0,0,0.1)',
+                backgroundColor: viewMode === 'board' ? '#007AFF' : 'rgba(255,255,255,0.75)', color: viewMode === 'board' ? 'white' : '#1d1d1f', cursor:'pointer',transition:'all 0.2s ease',backdropFilter: viewMode !== 'board' ? 'blur(10px)' : 'none',WebkitBackdropFilter: viewMode !== 'board' ? 'blur(10px)' : 'none'}}>
+              📊 Board
+            </button>
+          </div>
         </div>
 
+        {/* Kanban Board View */}
+        {viewMode === 'board' && (
+          <div style={{backgroundColor:'rgba(255,255,255,0.75)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(0,0,0,0.06)',padding:'1.5rem',marginBottom:'1.5rem',boxShadow:'0 2px 12px rgba(0,0,0,0.04)'}}>
+            <KanbanBoard bugs={filtered} onViewBug={setViewBug} />
+          </div>
+        )}
+
         {/* Desktop Table */}
+        {viewMode === 'list' && (
         <div ref={tableContainerRef} className="desktop-table" style={{backgroundColor:'rgba(255,255,255,0.75)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(0,0,0,0.06)',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)'}}>
           <div style={{overflowX:'auto',WebkitOverflowScrolling:'touch'}}>
             <table style={{width:'100%',borderCollapse:'collapse'}}>
@@ -951,20 +1127,22 @@ function BugTracker() {
         </div>
 
         {/* Mobile Card List */}
-        <div className="mobile-cards">
-          {filtered.length === 0 ? (
-            <div style={{padding:'3rem 1rem',textAlign:'center',color:'#86868b',fontSize:'0.875rem'}}>
-              {bugs.length === 0 ? "No bugs yet. Click 'Report Bug' to add one." : "No bugs match your filters."}
+        {viewMode === 'list' && (
+          <div className="mobile-cards">
+            {filtered.length === 0 ? (
+              <div style={{padding:'3rem 1rem',textAlign:'center',color:'#86868b',fontSize:'0.875rem'}}>
+                {bugs.length === 0 ? "No bugs yet. Click 'Report Bug' to add one." : "No bugs match your filters."}
+              </div>
+            ) : (
+              filtered.map((bug) => (
+                <BugCard key={bug.id} bug={bug} onView={setViewBug} onEdit={setEditBug} onDelete={setDeleteConfirm} />
+              ))
+            )}
+            <div style={{padding:'0.75rem 1rem',fontSize:'0.75rem',color:'#6e6e73'}}>
+              Showing {filtered.length} of {bugs.length} bugs
             </div>
-          ) : (
-            filtered.map((bug) => (
-              <BugCard key={bug.id} bug={bug} onView={setViewBug} onEdit={setEditBug} onDelete={setDeleteConfirm} />
-            ))
-          )}
-          <div style={{padding:'0.75rem 1rem',fontSize:'0.75rem',color:'#6e6e73'}}>
-            Showing {filtered.length} of {bugs.length} bugs
           </div>
-        </div>
+        )}
       </div>
 
       {/* Modals */}
