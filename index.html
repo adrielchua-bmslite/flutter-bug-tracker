@@ -50,7 +50,11 @@
     /* Form grids: stack to 1 column on mobile */
     .form-grid-mobile { grid-template-columns: 1fr !important; }
 
-    /* Table: hide less important columns on very small screens */
+    /* Table: hide on mobile, show card list */
+    .desktop-table { display: none !important; }
+    .mobile-cards { display: block !important; }
+
+    /* Table: hide less important columns on very small screens (desktop fallback) */
     .table-col-assigned { display: none; }
     .table-col-date { display: none; }
 
@@ -70,6 +74,94 @@
 
     /* Adjust table font on small screens */
     .table-row { font-size: 0.8rem !important; }
+  }
+
+  /* Default: show table, hide cards */
+  .desktop-table { display: block; }
+  .mobile-cards { display: none; }
+
+  /* Bug card styles for mobile */
+  .bug-card {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .bug-card:active {
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .bug-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .bug-card-id {
+    color: #86868b;
+    font-family: monospace;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+
+  .bug-card-title {
+    color: #1d1d1f;
+    font-size: 0.875rem;
+    font-weight: 500;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .bug-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .bug-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #6e6e73;
+    gap: 10px;
+  }
+
+  .bug-card-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 4px;
+  }
+
+  .bug-card-action-btn {
+    padding: 6px;
+    border-radius: 6px;
+    border: none;
+    background: rgba(0,0,0,0.04);
+    cursor: pointer;
+    color: #86868b;
+    font-size: 16px;
+    transition: all 0.2s ease;
+  }
+
+  .bug-card-action-btn:active {
+    background: rgba(0,0,0,0.08);
   }
 </style>
 </head>
@@ -489,6 +581,39 @@ function BugDetail({ bug, onClose, onEdit, onStatusChange }) {
   );
 }
 
+function BugCard({ bug, onView, onEdit, onDelete }) {
+  const pc = PRIORITY_COLORS[bug.priority];
+  const sc = STATUS_COLORS[bug.status];
+
+  return (
+    <div className="bug-card" onClick={() => onView(bug)}>
+      <div style={{display:'flex',alignItems:'flex-start',gap:'8px',marginBottom:'10px'}}>
+        <span className="bug-card-id">#{bug.id}</span>
+        <span className="bug-card-title" style={{flex:1}}>{bug.title}</span>
+      </div>
+
+      <div className="bug-card-badges">
+        <Badge style={{backgroundColor:'rgba(255,255,255,0.75)',color:'#1d1d1f'}}>{bug.platform}</Badge>
+        <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+          <span style={{width:6,height:6,borderRadius:'50%',display:'inline-block',backgroundColor:pc.dot}} />
+          <span style={{fontSize:'0.75rem',fontWeight:500,color:pc.style.color}}>{bug.priority}</span>
+        </div>
+        <Badge style={sc.style}>{bug.status}</Badge>
+      </div>
+
+      <div className="bug-card-footer">
+        <span>{bug.dateReported}</span>
+        <span style={{flex:1,textAlign:'right'}}>Assigned: {bug.assignedTo || "—"}</span>
+      </div>
+
+      <div className="bug-card-actions" onClick={(e) => e.stopPropagation()}>
+        <button onClick={() => onEdit(bug)} className="bug-card-action-btn" title="Edit">✏️</button>
+        <button onClick={() => onDelete(bug.id)} className="bug-card-action-btn" title="Delete">🗑️</button>
+      </div>
+    </div>
+  );
+}
+
 function SetupScreen() {
   return (
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',padding:'2rem'}}>
@@ -737,8 +862,8 @@ function BugTracker() {
           </div>
         </div>
 
-        {/* Table */}
-        <div style={{backgroundColor:'rgba(255,255,255,0.75)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(0,0,0,0.06)',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)'}}>
+        {/* Desktop Table */}
+        <div className="desktop-table" style={{backgroundColor:'rgba(255,255,255,0.75)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(0,0,0,0.06)',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)'}}>
           <div style={{overflowX:'auto',WebkitOverflowScrolling:'touch'}}>
             <table style={{width:'100%',borderCollapse:'collapse'}}>
               <thead>
@@ -795,6 +920,22 @@ function BugTracker() {
             </table>
           </div>
           <div style={{padding:'0.75rem 1rem',borderTop:'1px solid rgba(0,0,0,0.06)',backgroundColor:'rgba(255,255,255,0.5)',fontSize:'0.75rem',color:'#6e6e73'}}>
+            Showing {filtered.length} of {bugs.length} bugs
+          </div>
+        </div>
+
+        {/* Mobile Card List */}
+        <div className="mobile-cards">
+          {filtered.length === 0 ? (
+            <div style={{padding:'3rem 1rem',textAlign:'center',color:'#86868b',fontSize:'0.875rem'}}>
+              {bugs.length === 0 ? "No bugs yet. Click 'Report Bug' to add one." : "No bugs match your filters."}
+            </div>
+          ) : (
+            filtered.map((bug) => (
+              <BugCard key={bug.id} bug={bug} onView={setViewBug} onEdit={setEditBug} onDelete={setDeleteConfirm} />
+            ))
+          )}
+          <div style={{padding:'0.75rem 1rem',fontSize:'0.75rem',color:'#6e6e73'}}>
             Showing {filtered.length} of {bugs.length} bugs
           </div>
         </div>
