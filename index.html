@@ -1065,66 +1065,67 @@ function BugTracker() {
 
         {/* Desktop Table */}
         {viewMode === 'list' && (
-        <div ref={tableContainerRef} className="desktop-table" style={{backgroundColor:'rgba(255,255,255,0.75)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(0,0,0,0.06)',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)'}}>
-          <div style={{overflowX:'auto',WebkitOverflowScrolling:'touch'}}>
-            <table style={{width:'100%',borderCollapse:'collapse'}}>
-              <thead>
-                <tr style={{backgroundColor:'rgba(0,0,0,0.02)',borderBottom:'1px solid rgba(0,0,0,0.04)'}} className="table-row">
-                  <th style={thStyle} onClick={() => handleSort("id")}>ID <SortArrow field="id" /></th>
-                  <th style={thStyle} onClick={() => handleSort("title")}>Title <SortArrow field="title" /></th>
-                  <th style={thStyle} onClick={() => handleSort("platform")}>Platform <SortArrow field="platform" /></th>
-                  <th style={thStyle} onClick={() => handleSort("priority")}>Priority <SortArrow field="priority" /></th>
-                  <th style={thStyle} onClick={() => handleSort("status")}>Status <SortArrow field="status" /></th>
-                  <th style={thStyle} onClick={() => handleSort("dateReported")} className="table-col-date">Date <SortArrow field="dateReported" /></th>
-                  <th style={{...thStyle,cursor:'default'}} className="table-col-assigned">Assigned</th>
-                  <th style={{...thStyle,textAlign:'right',cursor:'default'}}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.length === 0 ? (
-                  <tr><td colSpan={8} style={{padding:'3rem 1rem',textAlign:'center',color:'#86868b',fontSize:'0.875rem'}}>
-                    {bugs.length === 0 ? "No bugs yet. Click 'Report Bug' to add one." : "No bugs match your filters."}
-                  </td></tr>
-                ) : (
-                  filtered.map((bug) => {
-                    const pc = PRIORITY_COLORS[bug.priority];
-                    const sc = STATUS_COLORS[bug.status];
-                    return (
-                      <tr key={bug.id} style={{borderBottom:'1px solid rgba(0,0,0,0.04)',cursor:'pointer',transition:'all 0.2s ease'}} className="table-row"
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor='rgba(0,122,255,0.04)'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor='transparent'}
-                        onClick={() => setViewBug(bug)}>
-                        <td style={{...tdStyle,color:'#86868b',fontFamily:'monospace'}}>#{bug.id}</td>
-                        <td style={tdStyle}>
-                          <span style={{fontWeight:500,color:'#1d1d1f',maxWidth:'280px',display:'block',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{bug.title}</span>
-                        </td>
-                        <td style={tdStyle}><Badge style={{backgroundColor:'rgba(255,255,255,0.75)',color:'#1d1d1f'}}>{bug.platform}</Badge></td>
-                        <td style={tdStyle}>
-                          <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
-                            <span style={{width:8,height:8,borderRadius:'50%',display:'inline-block',backgroundColor:pc.dot}} />
-                            <span style={{fontSize:'0.75rem',fontWeight:500,color:pc.style.color}}>{bug.priority}</span>
-                          </div>
-                        </td>
-                        <td style={tdStyle}><Badge style={sc.style}>{bug.status}</Badge></td>
-                        <td style={{...tdStyle,color:'#6e6e73'}} className="table-col-date">{bug.dateReported}</td>
-                        <td style={{...tdStyle,color:'#6e6e73'}} className="table-col-assigned">{bug.assignedTo || "\u2014"}</td>
-                        <td style={{...tdStyle,textAlign:'right'}} onClick={(e) => e.stopPropagation()}>
-                          <button onClick={() => setEditBug(bug)} title="Edit"
-                            style={{padding:6,borderRadius:6,border:'none',background:'none',cursor:'pointer',color:'#86868b',marginRight:4}}>✏️</button>
-                          <button onClick={() => setDeleteConfirm(bug.id)} title="Delete"
-                            style={{padding:6,borderRadius:6,border:'none',background:'none',cursor:'pointer',color:'#86868b'}}>🗑️</button>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+          <div ref={tableContainerRef} className="desktop-table" style={{backgroundColor:'rgba(255,255,255,0.75)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:'16px',border:'1px solid rgba(0,0,0,0.06)',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)'}}>
+            <div style={{overflowX:'auto',WebkitOverflowScrolling:'touch'}}>
+              <table style={{width:'100%',borderCollapse:'collapse'}}>
+                <thead>
+                  <tr style={{backgroundColor:'rgba(0,0,0,0.02)',borderBottom:'1px solid rgba(0,0,0,0.04)'}} className="table-row">
+                    <th style={thStyle} onClick={() => handleSort("id")}>ID <SortArrow field="id" /></th>
+                    <th style={thStyle} onClick={() => handleSort("title")}>Title <SortArrow field="title" /></th>
+                    <th style={thStyle} onClick={() => handleSort("platform")}>Platform <SortArrow field="platform" /></th>
+                    <th style={thStyle} onClick={() => handleSort("priority")}>Priority <SortArrow field="priority" /></th>
+                    <th style={thStyle} onClick={() => handleSort("status")}>Status <SortArrow field="status" /></th>
+                    <th style={thStyle} onClick={() => handleSort("dateReported")} className="table-col-date">Date <SortArrow field="dateReported" /></th>
+                    <th style={{...thStyle,cursor:'default'}} className="table-col-assigned">Assigned</th>
+                    <th style={{...thStyle,textAlign:'right',cursor:'default'}}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.length === 0 ? (
+                    <tr><td colSpan={8} style={{padding:'3rem 1rem',textAlign:'center',color:'#86868b',fontSize:'0.875rem'}}>
+                      {bugs.length === 0 ? "No bugs yet. Click 'Report Bug' to add one." : "No bugs match your filters."}
+                    </td></tr>
+                  ) : (
+                    filtered.map((bug) => {
+                      const pc = PRIORITY_COLORS[bug.priority];
+                      const sc = STATUS_COLORS[bug.status];
+                      return (
+                        <tr key={bug.id} style={{borderBottom:'1px solid rgba(0,0,0,0.04)',cursor:'pointer',transition:'all 0.2s ease'}} className="table-row"
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor='rgba(0,122,255,0.04)'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor='transparent'}
+                          onClick={() => setViewBug(bug)}>
+                          <td style={{...tdStyle,color:'#86868b',fontFamily:'monospace'}}>#{bug.id}</td>
+                          <td style={tdStyle}>
+                            <span style={{fontWeight:500,color:'#1d1d1f',maxWidth:'280px',display:'block',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{bug.title}</span>
+                          </td>
+                          <td style={tdStyle}><Badge style={{backgroundColor:'rgba(255,255,255,0.75)',color:'#1d1d1f'}}>{bug.platform}</Badge></td>
+                          <td style={tdStyle}>
+                            <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                              <span style={{width:8,height:8,borderRadius:'50%',display:'inline-block',backgroundColor:pc.dot}} />
+                              <span style={{fontSize:'0.75rem',fontWeight:500,color:pc.style.color}}>{bug.priority}</span>
+                            </div>
+                          </td>
+                          <td style={tdStyle}><Badge style={sc.style}>{bug.status}</Badge></td>
+                          <td style={{...tdStyle,color:'#6e6e73'}} className="table-col-date">{bug.dateReported}</td>
+                          <td style={{...tdStyle,color:'#6e6e73'}} className="table-col-assigned">{bug.assignedTo || "\u2014"}</td>
+                          <td style={{...tdStyle,textAlign:'right'}} onClick={(e) => e.stopPropagation()}>
+                            <button onClick={() => setEditBug(bug)} title="Edit"
+                              style={{padding:6,borderRadius:6,border:'none',background:'none',cursor:'pointer',color:'#86868b',marginRight:4}}>✏️</button>
+                            <button onClick={() => setDeleteConfirm(bug.id)} title="Delete"
+                              style={{padding:6,borderRadius:6,border:'none',background:'none',cursor:'pointer',color:'#86868b'}}>🗑️</button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div style={{padding:'0.75rem 1rem',borderTop:'1px solid rgba(0,0,0,0.06)',backgroundColor:'rgba(255,255,255,0.5)',fontSize:'0.75rem',color:'#6e6e73'}}>
+              Showing {filtered.length} of {bugs.length} bugs
+            </div>
           </div>
-          <div style={{padding:'0.75rem 1rem',borderTop:'1px solid rgba(0,0,0,0.06)',backgroundColor:'rgba(255,255,255,0.5)',fontSize:'0.75rem',color:'#6e6e73'}}>
-            Showing {filtered.length} of {bugs.length} bugs
-          </div>
-        </div>
+        )}
 
         {/* Mobile Card List */}
         {viewMode === 'list' && (
